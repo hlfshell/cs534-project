@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2022-06-29 15:59:20 by Eclipse SUMO netedit Version 1.13.0
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <!-- Routes -->
+    <route id="r_0" edges="E0 E1 E2 E3 E4" color="yellow"/>
+    <route id="r_1" edges="E0 E12" color="magenta"/>
+    <route id="r_10" edges="-E21 -E20 -E19" color="90,0,255"/>
+    <route id="r_2" edges="-E4 -E3 -E2 -E1 -E0" color="yellow"/>
+    <route id="r_3" edges="E10 E11 E12" color="90,0,255"/>
+    <route id="r_4" edges="E13 E14 E15" color="90,0,255"/>
+    <route id="r_5" edges="E16 E17 E18" color="90,0,255"/>
+    <route id="r_6" edges="E19 E20 E21" color="90,0,255"/>
+    <route id="r_7" edges="-E12 -E11 -E10" color="90,0,255"/>
+    <route id="r_8" edges="-E15 -E14 -E13" color="90,0,255"/>
+    <route id="r_9" edges="-E18 -E17 -E16" color="90,0,255"/>
+    <!-- Vehicles, persons and containers (sorted by depart) -->
+    <flow id="f_0" begin="0.00" route="r_0" end="3600.00" vehsPerHour="1800.00"/>
+    <flow id="f_1" begin="0.00" color="red" route="r_2" end="3600.00" vehsPerHour="500.00"/>
+    <flow id="f_2" begin="0.00" color="127,0,255" route="r_7" end="3600.00" vehsPerHour="200.00"/>
+    <flow id="f_3" begin="0.00" color="127,0,255" route="r_3" end="3600.00" vehsPerHour="200.00"/>
+    <flow id="f_4" begin="0.00" color="127,0,255" route="r_3" end="3600.00" vehsPerHour="200.00"/>
+    <flow id="f_5" begin="0.00" color="127,0,255" route="r_8" end="3600.00" vehsPerHour="200.00"/>
+    <flow id="f_6" begin="0.00" color="127,0,255" route="r_4" end="3600.00" vehsPerHour="200.00"/>
+    <vehicle id="v_0" depart="0.00" route="r_0"/>
+    <vehicle id="v_1" depart="0.00" route="r_0"/>
+    <vehicle id="v_2" depart="0.00" color="magenta" route="r_1"/>
+    <vehicle id="v_3" depart="0.00" color="magenta" route="r_1"/>
+    <vehicle id="v_4" depart="0.00" color="magenta" route="r_1"/>
+    <vehicle id="v_5" depart="0.00" color="magenta" route="r_1"/>
+</routes>
