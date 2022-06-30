@@ -11,7 +11,6 @@
     </input>
     <output>
         <statistic-output value="stats.xml"/>
-        <full-output value="fullout.xml"/>
     </output>
 
 </configuration>
