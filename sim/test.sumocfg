@@ -11,6 +11,12 @@
     </input>
     <output>
         <statistic-output value="stats.xml"/>
+        <lanechange-output value="lchg.xml"/>
     </output>
+    <report>
+        <duration-log.statistics value="true"/>
+        <tripinfo-output vale="true"/>
+      
+    </report>
 
 </configuration>
