@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-import os
 import sys
-import optparse
 
 
 from sumolib import checkBinary  # Checks for the binary in environ vars
@@ -12,7 +10,12 @@ import traci
 def run():
     step = 0
     while traci.simulation.getMinExpectedNumber() > 0:
+        step += 1
         traci.simulationStep()
+
+        if step % 100 == 0:
+            for id in traci.trafficlight.getIDList():
+                print(f"{id} - {traci.trafficlight.getPhase(id)}")
 
     print("Vehicles")
     vehicle_ids = traci.vehicle.getIDList()
@@ -37,6 +40,5 @@ if __name__ == "__main__":
     sumoBinary = checkBinary('sumo')
 
     # traci starts sumo as a subprocess and then this script connects and runs
-    traci.start([sumoBinary, "-c", "sim/test.sumocfg"])#,
-                            #  "--tripdemoinfo-output", "tripinfo.xml"])
+    traci.start([sumoBinary, "-c", "sim/test.sumocfg"])
     run()
