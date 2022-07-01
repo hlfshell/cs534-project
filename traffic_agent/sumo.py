@@ -14,7 +14,7 @@ class Simulation():
     ):
         self.binary = checkBinary('sumo')
         self.simulation_config = simulation_config
-        self.step = 0
+        self.steps = 0
         self.stats_file = self.get_stats_file()
     
     def get_stats_file(self):
@@ -31,12 +31,21 @@ class Simulation():
 
     def step(self):
         traci.simulationStep()
-        self.step += 1
+        self.steps += 1
+
+    def complete(self) -> bool:
+        return not traci.simulation.getMinExpectedNumber() > 0
+
+    def stop(self):
+        traci.close()
 
     def shutdown(self):
         # Erase stats if it exists
+        try:
+            self.stop()
+        except:
+            pass
         remove(self.stats_file)
-        traci.close()
         sys.stdout.flush()
 
     def get_stats(self):
@@ -44,4 +53,14 @@ class Simulation():
         root = tree.getroot()
 
         for item in root.findall("vehicleTripStatistics"):
-            return item.get('totalTravelTime')
+            stats = {}
+            stats['totalTravelTime'] = item.get('totalTravelTime')
+            stats['routeLength'] = item.get('routeLength')
+            stats['speed'] = item.get('speed')
+            stats['waiting'] = item.get('waiting')
+            stats['timeLoss'] = item.get('timeLoss')
+            stats['departDelay'] = item.get('departDelay')
+            stats['departDelayWaiting'] = item.get('departDelayWaiting')
+            stats['totalDepartDelay'] = item.get('totalDepartDelay')
+
+            return stats
