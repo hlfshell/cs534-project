@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any, Dict
 from uuid import uuid4
 
@@ -25,3 +26,6 @@ class TrafficAgent():
 
     def step(self, simulation: Simulation):
         raise NotImplemented
+    
+    def __eq__(self, other: TrafficAgent) -> bool:
+        return self._id == other._id
