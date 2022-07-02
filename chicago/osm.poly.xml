@@ -26,6 +26,66 @@
 -->
 
 <additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <!-- Junction 00 -->
+    <e1Detector id="L00_0_0" lane="48785101#0_0" pos="120" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L00_0_1" lane="48785101#0_1" pos="120" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L00_3_3" lane="991196427_3" pos="55" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L00_3_2" lane="991196427_2" pos="55" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L00_3_1" lane="991196427_1" pos="55" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L00_3_0" lane="991196427_0" pos="55" freq="10" file="cross.out" friendlyPos="true"/>
+
+    <!-- Junction 01 -->
+    <e1Detector id="L01_0_0" lane="435704691#0_0" pos="15" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L01_0_1" lane="435704691#0_1" pos="15" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L01_0_2" lane="435704691#0_2" pos="15" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L01_2_0" lane="-134319743#1_0" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L01_2_1" lane="-134319743#1_1" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L01_2_2" lane="-134319743#1_2" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L01_3_0" lane="983233556#0_0" pos="73" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L01_3_1" lane="983233556#0_1" pos="73" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L01_3_2" lane="983233556#0_2" pos="73" freq="10" file="cross.out" friendlyPos="true"/>
+
+    <!-- Junction 02 -->
+    <e1Detector id="L02_0_0" lane="932951026#0_0" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L02_0_1" lane="932951026#0_1" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L02_0_2" lane="932951026#0_2" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L02_0_3" lane="932951026#0_3" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L02_3_0" lane="620366464#0_0" pos="15" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L02_3_1" lane="620366464#0_1" pos="15" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L02_3_2" lane="620366464#0_2" pos="15" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L02_3_3" lane="620366464#0_3" pos="15" freq="10" file="cross.out" friendlyPos="true"/>
+
+    <!-- Junction 03 -->
+    <e1Detector id="L03_2_0" lane="315089479#0_0" pos="112" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L03_2_1" lane="315089479#0_1" pos="112" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L03_2_2" lane="315089479#0_2" pos="112" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L03_3_0" lane="981135346#0_0" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L03_3_1" lane="981135346#0_1" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L03_3_2" lane="981135346#0_2" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L03_3_3" lane="981135346#0_3" pos="3" freq="10" file="cross.out" friendlyPos="true"/>
+
+    <!-- Junction 04 -->
+    <e1Detector id="L04_0_0" lane="433785009#0_0" pos="40" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L04_0_1" lane="433785009#0_1" pos="40" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L04_0_2" lane="433785009#0_2" pos="40" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L04_2_0" lane="-620293814#1_0" pos="45" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L04_2_1" lane="-620293814#1_1" pos="45" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L04_3_0" lane="1020908652_0" pos="39" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L04_3_1" lane="1020908652_1" pos="39" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L04_3_2" lane="1020908652_2" pos="39" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L04_3_3" lane="1020908652_3" pos="39" freq="10" file="cross.out" friendlyPos="true"/>
+
+    <!-- Junction 05 -->
+    <e1Detector id="L05_0_0" lane="1051036581#0_0" pos="120" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L05_0_1" lane="1051036581#0_1" pos="120" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L05_3_0" lane="151989531#0_0" pos="17" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L05_3_1" lane="151989531#0_1" pos="17" freq="10" file="cross.out" friendlyPos="true"/>
+    <e1Detector id="L05_3_2" lane="151989531#0_2" pos="17" freq="10" file="cross.out" friendlyPos="true"/>
+
+
+
+
+
     <location netOffset="-447290.00,-4636578.64" convBoundary="0.00,-0.00,896.29,564.45" origBoundary="-87.635271,41.879384,-87.624483,41.884489" projParameter="+proj=utm +zone=16 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"/>
 
     <poly id="1038884771" type="leisure.swimming_pool" color="207,245,201" fill="1" layer="-2.00" shape="500.850198,521.606329 515.049000,521.901948 515.136344,517.970728 500.929237,517.675170 500.850198,521.606329"/>
