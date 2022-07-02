@@ -14,7 +14,7 @@ class TrafficAgent():
     def execute(self, simulation: Simulation) -> Dict[str, float]:
         while not simulation.complete():
             simulation.step()
-            self.step()
+            self.step(simulation)
         
         simulation.stop()
         stats = simulation.get_stats()
@@ -22,5 +22,5 @@ class TrafficAgent():
 
         return stats
 
-    def step(self):
+    def step(self, simulation: Simulation):
         raise NotImplemented
