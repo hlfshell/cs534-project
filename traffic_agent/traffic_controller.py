@@ -34,5 +34,17 @@ class TrafficAgent():
             traci.trafficlight.setPhase(id, self.traffic_lights[id]["phase"])
             traci.trafficlight.setPhaseDuration(id, self.traffic_lights[id]["duration"])
 
+    def execute(self, simulation: Simulation) -> Dict[str, float]:
+        self.simulation = simulation
+        while not simulation.complete():
+            simulation.step()
+            self.step()
+        
+        simulation.stop()
+        stats = simulation.get_stats()
+        simulation.shutdown()
+
+        return stats
+
     def step(self):
         raise NotImplemented

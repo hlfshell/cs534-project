@@ -1,5 +1,6 @@
 from os import remove
 import sys
+from typing import List
 import traci
 from sumolib import checkBinary
 import xml.etree.ElementTree as ET
@@ -47,6 +48,12 @@ class Simulation():
             pass
         remove(self.stats_file)
         sys.stdout.flush()
+
+    def get_detectors(self) -> List[str]:
+        return traci.inductionloop.getIDList()
+    
+    def get_traffic_lights(self) -> List[str]:
+        return traci.trafficlight.getIDList()
 
     def get_stats(self):
         tree = ET.parse(self.stats_file)
