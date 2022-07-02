@@ -11,6 +11,10 @@
         <additional-files value="osm.poly.xml"/>
     </input>
 
+    <output>
+        <statistic-output value="stats.xml"/>
+    </output>
+
     <processing>
         <ignore-route-errors value="true"/>
     </processing>
