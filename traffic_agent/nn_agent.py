@@ -9,8 +9,8 @@ from traffic_agent.sumo import Simulation
 from traffic_agent.traffic_controller import TrafficAgent
 
 
-MIN_PHASE_DURATION = 10
-MAX_PHASE_DURATION = 45
+MIN_PHASE_DURATION = 25
+MAX_PHASE_DURATION = 90
 
 
 class NNAgent(TrafficAgent):
@@ -43,7 +43,7 @@ class NNAgent(TrafficAgent):
         self.traffic_light_ids = traffic_lights
         self.traffic_lights = simulation.get_traffic_lights()
 
-        input_size = len(detectors)
+        input_size = 2*len(detectors) # For each detector, we take 2 stats
         output_size = len(traffic_lights)
 
         self.weights = [
@@ -82,7 +82,7 @@ class NNAgent(TrafficAgent):
             if self.traffic_lights[id]["duration"] <= 0:
                 index = self.traffic_light_ids.index(id)
                 duration = durations[index]
-                self.traffic_light_ids[id]["duration"] = duration
+                self.traffic_lights[id]["duration"] = duration
                 simulation.set_traffic_light_duration(id, duration)
 
     def save(self):

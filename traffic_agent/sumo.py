@@ -31,7 +31,7 @@ class Simulation():
     def start(self):
         if self.running:
             return
-        traci.start([self.binary, "-c", self.simulation_config])
+        traci.start([self.binary, "-c", self.simulation_config, "--no-warnings"])
         self.running = True
 
     def step(self):

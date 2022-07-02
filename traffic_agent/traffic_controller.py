@@ -14,7 +14,11 @@ class TrafficAgent():
         self._id = uuid4()
             
     def execute(self, simulation: Simulation) -> Dict[str, float]:
+        steps = 0
         while not simulation.complete():
+            steps += 1
+            if steps % 250 == 0:
+                print(f"Step {steps}")
             simulation.step()
             self.step(simulation)
         

@@ -17,6 +17,7 @@ class Trainer():
         population_size: int = 50,
         mutation_rate: float = 0.0,
         crossover: int = 0,
+        population: List[NNAgent] = []
     ):
         self.simulation = simulation
         self.generations = generations
@@ -25,7 +26,12 @@ class Trainer():
         self.mutation_rate = mutation_rate
         self.crossover = crossover
 
-        self.population: List[NNAgent] = []
+        self.population: List[NNAgent] = population
+        if len(population) == 0:
+            simulation.start()
+            while len(self.population) < self.population_size:
+                self.population.append(NNAgent(simulation))
+            simulation.shutdown()
 
     def train(self):
         for generation in range(0, self.generations):
@@ -76,6 +82,7 @@ class Trainer():
         for agent in self.population:
             iteration_fitnesses: List[float] = []
             for _ in range(0, self.iterations_per):
+                print(f"Finding fitness for agent {agent._id}")
                 fitness = self.find_fitness(agent)
                 iteration_fitnesses.append(fitness)
             fitness = sum(iteration_fitnesses)/len(iteration_fitnesses)
@@ -85,11 +92,14 @@ class Trainer():
         return fitnesses
 
     def find_fitness(self, agent: NNAgent) -> float:
+        self.simulation.start()
         stats = agent.execute(self.simulation)
 
         # Generate a fitness from the provided stats
         # For now I'll just use totalTravelTime
         fitness = stats['totalTravelTime']
+
+        self.simulation.shutdown()
 
         return fitness
 
