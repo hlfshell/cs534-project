@@ -1,4 +1,5 @@
 from __future__ import annotations
+from math import floor
 from random import uniform
 import numpy as np
 
@@ -20,6 +21,11 @@ class NNAgent(TrafficAgent):
         hidden_layer_size=100,
         weights = None
     ):
+        '''
+        Note - a simulation must be active to create a NNAgent
+        beccause it checks on existing traffic lights and
+        induction loops
+        '''
         super().__init__()
 
         self.hidden_layer_size = hidden_layer_size
@@ -32,9 +38,10 @@ class NNAgent(TrafficAgent):
         self._prepare_network(simulation)
 
     def _prepare_network(self, simulation: Simulation):
-        detectors = simulation.get_detectors()
-        traffic_lights = self.simulation.get_traffic_lights()
+        detectors = simulation.get_detector_ids()
+        traffic_lights = simulation.get_traffic_light_ids()
         self.traffic_light_ids = traffic_lights
+        self.traffic_lights = simulation.get_traffic_lights()
 
         input_size = len(detectors)
         output_size = len(traffic_lights)
@@ -44,8 +51,14 @@ class NNAgent(TrafficAgent):
             np.random.uniform(low=-1, high=1, size=(self.hidden_layer_size, output_size)),
         ]
 
-    def infer(self):
-        input = np.array([])
+    def infer(self, simulation: Simulation) -> List[int]:
+        detectors = simulation.get_detectors()
+        data = []
+        for id in detectors.keys():
+            data.append(detectors[id]["speed"])
+            data.append(detectors[id]["occupancy"])
+
+        input = np.array(data)
 
         hidden = relu(np.dot(input, self.weights[0]))
 
@@ -53,12 +66,24 @@ class NNAgent(TrafficAgent):
 
         # output is a range from 0-1, so lets convert that
         # to our min/max phase duration
-        durations: List[float] = [map(x) for x in output]
+        durations: List[int] = [floor(map(x)) for x in output]
 
         return durations
     
-    def step(self):
-        pass
+    def step(self, simulation: Simulation):
+        durations = self.infer(simulation)
+
+        for id in self.traffic_light_ids:
+            # Decrement each traffic light duration by one, as
+            # one step is one second. For each that are set to
+            # zero, grab the current network's duration setting
+            # for it.
+            self.traffic_lights[id]["duration"] -= 1
+            if self.traffic_lights[id]["duration"] <= 0:
+                index = self.traffic_light_ids.index(id)
+                duration = durations[index]
+                self.traffic_light_ids[id]["duration"] = duration
+                simulation.set_traffic_light_duration(id, duration)
 
     def save(self):
         raise NotImplemented
@@ -78,7 +103,7 @@ def relu(x):
     return (x > 0) * x
 
 
-def map(value) -> float:
+def map(value: float) -> float:
     outMin = MIN_PHASE_DURATION
     outMax = MAX_PHASE_DURATION
     inMin = 0
