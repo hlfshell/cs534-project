@@ -1,19 +1,17 @@
 
 
 from traffic_agent.sumo import Simulation
+from traffic_agent.trainer import Trainer
 
-stats = []
+simulation = Simulation("./chicago/chicago.sumocfg")
 
-for i in range(0,5):
-    # simulation = Simulation("./sim/test.sumocfg")
-    simulation = Simulation("./chicago/chicago.sumocfg")
-    simulation.start()
+trainer = Trainer(
+    simulation,
+    50,
+    iterations_per=1,
+    population_size=50,
+    mutation_rate=0.07,
+    crossover=3
+)
 
-    while not simulation.complete():
-        simulation.step()
-
-    simulation.stop()
-    stats.append(simulation.get_stats())
-    simulation.shutdown()
-
-print(stats)
+trainer.train()
