@@ -3,6 +3,8 @@ import traci
 
 from traffic_agent.sumo import Simulation
 
+traffic_light: Dict[str, Any]
+
 class TrafficAgent():
 
     def __init__(
@@ -21,8 +23,11 @@ class TrafficAgent():
         for id in self.traffic_lights.keys():
             phase = traci.trafficlight.getPhase(id)
             duration = traci.trafficlight.getPhaseDuration(id)
+            state = traci.trafficlight.getRedYellowGreenState(id)
+
             self.traffic_lights[id]["phase"] = phase
             self.traffic_lights[id]["duration"] = duration
+            self.traffic_lights[id]["state"] = state
 
     def set_traffic_lights(self):
         for id in self.traffic_lights.keys():
