@@ -20,7 +20,7 @@ class NNAgent(TrafficAgent):
         hidden_layer_size=100,
         weights = None
     ):
-        super().__init__(simulation)
+        super().__init__()
 
         self.hidden_layer_size = hidden_layer_size
         
@@ -29,10 +29,10 @@ class NNAgent(TrafficAgent):
         else:
             self.weights: List[np.ndarray] = []
 
-        self._prepare_network()
+        self._prepare_network(simulation)
 
-    def _prepare_network(self):
-        detectors = self.simulation.get_detectors()
+    def _prepare_network(self, simulation: Simulation):
+        detectors = simulation.get_detectors()
         traffic_lights = self.simulation.get_traffic_lights()
         self.traffic_light_ids = traffic_lights
 
