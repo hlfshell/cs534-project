@@ -9,10 +9,7 @@ class TrafficAgent():
     def __init__(
         self,
     ):
-        '''
-        Note - a simulation must be active to create a TrafficAgent
-        beccause it checks on existing traffic lights
-        '''
+        pass
             
     def execute(self, simulation: Simulation) -> Dict[str, float]:
         while not simulation.complete():
