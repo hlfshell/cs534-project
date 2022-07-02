@@ -84,6 +84,8 @@ class Simulation():
         
         return lights
 
+    def set_traffic_light_duration(self, id:str, duration: int):
+        traci.trafficlight.setPhaseDuration(id, duration)
 
     def get_stats(self):
         tree = ET.parse(self.stats_file)
