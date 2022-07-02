@@ -1,4 +1,5 @@
 from typing import Any, Dict
+from uuid import uuid4
 
 from traffic_agent.sumo import Simulation
 
@@ -9,7 +10,7 @@ class TrafficAgent():
     def __init__(
         self,
     ):
-        pass
+        self._id = uuid4()
             
     def execute(self, simulation: Simulation) -> Dict[str, float]:
         while not simulation.complete():
