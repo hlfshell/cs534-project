@@ -17,6 +17,7 @@ class Simulation():
         self.simulation_config = simulation_config
         self.steps = 0
         self.stats_file = self.get_stats_file()
+        self.running = False
     
     def get_stats_file(self):
         tree = ET.parse(self.simulation_config)
@@ -28,7 +29,10 @@ class Simulation():
 
 
     def start(self):
+        if self.running:
+            return
         traci.start([self.binary, "-c", self.simulation_config])
+        self.running = True
 
     def step(self):
         traci.simulationStep()
@@ -38,6 +42,9 @@ class Simulation():
         return not traci.simulation.getMinExpectedNumber() > 0
 
     def stop(self):
+        if not self.running:
+            return
+        self.running = False
         traci.close()
 
     def shutdown(self):
