@@ -1,6 +1,6 @@
 from os import remove
 import sys
-from typing import List
+from typing import Any, Dict, List
 import traci
 from sumolib import checkBinary
 import xml.etree.ElementTree as ET
@@ -49,11 +49,41 @@ class Simulation():
         remove(self.stats_file)
         sys.stdout.flush()
 
-    def get_detectors(self) -> List[str]:
+    def get_detector_ids(self) -> List[str]:
         return traci.inductionloop.getIDList()
     
-    def get_traffic_lights(self) -> List[str]:
+    def get_detectors(self) -> Dict[str, Dict[str, float]]:
+        detectors: Dict[str, Dict[str, float]] = {}
+        for id in self.get_detector_ids():
+            speed: float = traci.inductionloop.getLastStepMeanSpeed(id)
+            occupancy: float = traci.inductionloop.getLastStepOccupancy(id)
+
+            detectors[id] = {
+                "speed": speed,
+                "occupancy": occupancy
+            }
+
+        return detectors     
+
+
+    def get_traffic_light_ids(self) -> List[str]:
         return traci.trafficlight.getIDList()
+
+    def get_traffic_lights(self) -> Dict[str, Dict[str, Any]]:
+        lights: Dict[str, Dict[str, Any]] = {}
+        for id in self.get_traffic_light_ids():
+            phase = traci.trafficlight.getPhase(id)
+            duration = traci.trafficlight.getPhaseDuration(id)
+            state = traci.trafficlight.getRedYellowGreenState(id)
+
+            lights[id] = {
+                "phase": phase,
+                "duration": duration,
+                "state": state
+            }
+        
+        return lights
+
 
     def get_stats(self):
         tree = ET.parse(self.stats_file)
