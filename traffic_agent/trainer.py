@@ -1,8 +1,9 @@
 
 
 
+from random import choice, choices
 from typing import List
-from traffic_agent.nn_agent import NNAgent
+from traffic_agent.nn_agent import NNAgent, mate
 from traffic_agent.sumo import Simulation
 
 
@@ -15,30 +16,66 @@ class Trainer():
         iterations_per: int = 1,
         population_size: int = 50,
         mutation_rate: float = 0.0,
+        crossover: int = 0,
     ):
         self.simulation = simulation
         self.generations = generations
         self.iterations_per = iterations_per
         self.population_size = population_size
         self.mutation_rate = mutation_rate
+        self.crossover = crossover
 
         self.population: List[NNAgent] = []
 
     def train(self):
-        for i in range(0, self.generations):
+        for generation in range(0, self.generations):
+            print(f"Starting Generation {generation+1}")
             fitnesses = self.find_generation_fitness()
 
-            # TODO - organize fitnesses - lowest score bet
-            # Create mating pairs based on probability of ranking
-            # And pass-through best N to the population without
-            # changes
-            self.mate()
+            # The fitness index is equivalent to the
+            # population index, so we must sort both
+            # equvialently to do this right
+            fitness_population = zip(fitnesses, self.population)
+            sorted_fitness_population = sorted(fitness_population)
+
+            fitness_scores = [x[0] for x in sorted_fitness_population]
+            self.population = [x[1] for x in sorted_fitness_population]
+
+            # Now that we have our fittest, save the fittest and announce
+            # it
+
+            print("*************")
+            print(f"Generation {generation+1} results:")
+            print(f"Healthiest agent is {self.population[0]._id} with a fitness of {self.find_fitness[0]}")
+            print(f"Worst score was {fitness_scores[-1]}")
+            print("*************")
+
+            # Now it's time for the networks to produce the next generation
+
+            # Our weighted probability of choosing a fitness score
+            # is based upon the lowest fitness score, but we want
+            # that to have the highest weight. So we need to take the
+            # inverse of that score to offset the weight.
+            weighted_fitness_scores = [1/(x**2) for x in fitness_scores]
+
+            new_population: List[NNAgent] = []
+            if self.crossover > 0:
+                new_population = self.population[0:self.crossover]
+            
+            while len(new_population) < self.population_size:
+                a = choices(self.population, weights=weighted_fitness_scores)
+                b = None
+                while b != a:
+                    b = choices(self.population, weights=weighted_fitness_scores)
+
+                agent = mate(a, b, self.mutation_rate)
+                new_population.append(agent)
 
     def find_generation_fitness(self) -> List[float]:
         fitnesses: List[float] = []
         for agent in self.population:
             iteration_fitnesses: List[float] = []
-            for i in range(0, self.iterations_per):
+            for _ in range(0, self.iterations_per):
                 fitness = self.find_fitness(agent)
                 iteration_fitnesses.append(fitness)
             fitness = sum(iteration_fitnesses)/len(iteration_fitnesses)
