@@ -80,7 +80,7 @@ class Simulation():
         lights: Dict[str, Dict[str, Any]] = {}
         for id in self.get_traffic_light_ids():
             phase = traci.trafficlight.getPhase(id)
-            duration = traci.trafficlight.getPhaseDuration(id)
+            duration = traci.trafficlight.getNextSwitch(id)-traci.simulation.getTime()
             state = traci.trafficlight.getRedYellowGreenState(id)
 
             lights[id] = {

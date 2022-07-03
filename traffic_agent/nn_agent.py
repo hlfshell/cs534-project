@@ -79,7 +79,7 @@ class NNAgent(TrafficAgent):
             # zero, grab the current network's duration setting
             # for it.
             self.traffic_lights[id]["duration"] -= 1
-            if self.traffic_lights[id]["duration"] <= 0:
+            if self.traffic_lights[id]["duration"] <= -1:
                 index = self.traffic_light_ids.index(id)
                 duration = durations[index]
                 self.traffic_lights[id]["duration"] = duration
