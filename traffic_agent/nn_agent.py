@@ -9,7 +9,7 @@ from traffic_agent.sumo import Simulation
 from traffic_agent.traffic_controller import TrafficAgent
 
 
-MIN_PHASE_DURATION = 25
+MIN_PHASE_DURATION = 45
 MAX_PHASE_DURATION = 90
 
 
