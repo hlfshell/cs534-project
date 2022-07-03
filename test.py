@@ -3,15 +3,15 @@
 from traffic_agent.sumo import Simulation
 from traffic_agent.trainer import Trainer
 
-simulation = Simulation("./chicago/chicago.sumocfg")
+simulation = Simulation("./sim/test.sumocfg")
 
 trainer = Trainer(
     simulation,
-    50,
+    20,
     iterations_per=1,
-    population_size=50,
+    population_size=10,
     mutation_rate=0.07,
-    crossover=3
+    crossover=1
 )
 
 trainer.train()
