@@ -51,9 +51,9 @@ class Simulation():
         # Erase stats if it exists
         try:
             self.stop()
+            remove(self.stats_file)
         except:
             pass
-        remove(self.stats_file)
         sys.stdout.flush()
 
     def get_detector_ids(self) -> List[str]:
@@ -100,13 +100,13 @@ class Simulation():
 
         for item in root.findall("vehicleTripStatistics"):
             stats = {}
-            stats['totalTravelTime'] = item.get('totalTravelTime')
-            stats['routeLength'] = item.get('routeLength')
-            stats['speed'] = item.get('speed')
-            stats['waiting'] = item.get('waiting')
-            stats['timeLoss'] = item.get('timeLoss')
-            stats['departDelay'] = item.get('departDelay')
-            stats['departDelayWaiting'] = item.get('departDelayWaiting')
-            stats['totalDepartDelay'] = item.get('totalDepartDelay')
+            stats['totalTravelTime'] = float(item.get('totalTravelTime'))
+            stats['routeLength'] = float(item.get('routeLength'))
+            stats['speed'] = float(item.get('speed'))
+            # stats['waiting'] = float(item.get('waiting'))
+            stats['timeLoss'] = float(item.get('timeLoss'))
+            stats['departDelay'] = float(item.get('departDelay'))
+            stats['departDelayWaiting'] = float(item.get('departDelayWaiting'))
+            stats['totalDepartDelay'] = float(item.get('totalDepartDelay'))
 
             return stats
