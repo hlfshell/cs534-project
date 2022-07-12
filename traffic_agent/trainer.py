@@ -1,7 +1,7 @@
 
 
 
-from random import choice, choices
+from random import choices
 from typing import List
 from traffic_agent.nn_agent import NNAgent, mate
 from traffic_agent.sumo import Simulation
@@ -35,7 +35,9 @@ class Trainer():
 
     def train(self):
         for generation in range(0, self.generations):
+            print("****************************************************")
             print(f"Starting Generation {generation+1}")
+            print("****************************************************")
             fitnesses = self.find_generation_fitness()
 
             # The fitness index is equivalent to the
@@ -50,11 +52,12 @@ class Trainer():
             # Now that we have our fittest, save the fittest and announce
             # it
 
-            print("*************")
+            print("****************************************************")
             print(f"Generation {generation+1} results:")
-            print(f"Healthiest agent is {self.population[0]._id} with a fitness of {self.find_fitness[0]}")
+            print(f"Healthiest agent is {self.population[0]._id} with a fitness of {fitness_scores[0]}")
+            print(f"Average fitness was {sum(fitness_scores)/len(fitness_scores)}")
             print(f"Worst score was {fitness_scores[-1]}")
-            print("*************")
+            print("****************************************************")
 
             # Now it's time for the networks to produce the next generation
 
@@ -69,12 +72,12 @@ class Trainer():
                 new_population = self.population[0:self.crossover]
             
             while len(new_population) < self.population_size:
-                a = choices(self.population, weights=weighted_fitness_scores)
+                a = choices(self.population, weights=weighted_fitness_scores)[0]
                 b = None
                 while b != a:
-                    b = choices(self.population, weights=weighted_fitness_scores)
+                    b = choices(self.population, weights=weighted_fitness_scores)[0]
 
-                agent = mate(a, b, self.mutation_rate)
+                agent = mate(self.simulation, a, b, self.mutation_rate)
                 new_population.append(agent)
 
     def find_generation_fitness(self) -> List[float]:
@@ -85,6 +88,7 @@ class Trainer():
                 print(f"Finding fitness for agent {agent._id}")
                 fitness = self.find_fitness(agent)
                 iteration_fitnesses.append(fitness)
+
             fitness = sum(iteration_fitnesses)/len(iteration_fitnesses)
 
             fitnesses.append(fitness)
