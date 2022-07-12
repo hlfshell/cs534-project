@@ -11,9 +11,13 @@ class Simulation():
 
     def __init__(
         self,
-        simulation_config: str
+        simulation_config: str,
+        gui: bool = False
     ):
-        self.binary = checkBinary('sumo')
+        if gui:
+            self.binary = checkBinary('sumo-gui')
+        else:
+            self.binary = checkBinary('sumo')
         self.simulation_config = simulation_config
         self.steps = 0
         self.stats_file = self.get_stats_file()
