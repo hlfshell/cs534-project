@@ -34,11 +34,12 @@ class Trainer():
             simulation.shutdown()
 
     def train(self):
+        fitnesses: List[float] = []
         for generation in range(0, self.generations):
             print("****************************************************")
             print(f"Starting Generation {generation+1}")
             print("****************************************************")
-            fitnesses = self.find_generation_fitness()
+            fitnesses = self.find_generation_fitness(fitnesses=fitnesses)
 
             # The fitness index is equivalent to the
             # population index, so we must sort both
@@ -70,6 +71,11 @@ class Trainer():
             new_population: List[NNAgent] = []
             if self.crossover > 0:
                 new_population = self.population[0:self.crossover]
+                fitnesses = fitness_scores[0:self.crossover]
+            else:
+                # If we're not doing crossover, we need to just reset
+                # fitnesses
+                fitnesses = []
             
             while len(new_population) < self.population_size:
                 a = choices(self.population, weights=weighted_fitness_scores)[0]
@@ -80,9 +86,14 @@ class Trainer():
                 agent = mate(self.simulation, a, b, self.mutation_rate)
                 new_population.append(agent)
 
-    def find_generation_fitness(self) -> List[float]:
-        fitnesses: List[float] = []
-        for agent in self.population:
+    def find_generation_fitness(self, fitnesses: List[float] =[]) -> List[float]:
+        fitnesses_starting_length = len(fitnesses)
+        for index, agent in enumerate(self.population):
+            # This is to prevent retraining agents that
+            # were brought on for being the best in prior
+            # generations
+            if index < fitnesses_starting_length:
+                continue
             iteration_fitnesses: List[float] = []
             for _ in range(0, self.iterations_per):
                 print(f"Finding fitness for agent {agent._id}")
