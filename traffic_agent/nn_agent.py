@@ -3,14 +3,16 @@ from math import floor
 from random import uniform
 import numpy as np
 
+import traci
+
 from collections import defaultdict
 from typing import Dict, List
 from traffic_agent.sumo import Simulation
 from traffic_agent.traffic_controller import TrafficAgent
 
 
-MIN_PHASE_DURATION = 45
-MAX_PHASE_DURATION = 90
+MIN_PHASE_DURATION = 3
+MAX_PHASE_DURATION = 20
 
 
 class NNAgent(TrafficAgent):
@@ -44,6 +46,7 @@ class NNAgent(TrafficAgent):
         self.traffic_lights = simulation.get_traffic_lights()
 
         input_size = 2*len(detectors) # For each detector, we take 2 stats
+        # input_size = len(detectors) # For each detector, we take 2 stats
         output_size = len(traffic_lights)
 
         self.weights = [
@@ -55,9 +58,10 @@ class NNAgent(TrafficAgent):
         detectors = simulation.get_detectors()
         data = []
         for id in detectors.keys():
-            data.append(detectors[id]["speed"])
-            data.append(detectors[id]["occupancy"])
+            data.append(detectors[id]["speed"] / 100)
+            data.append(detectors[id]["occupancy"] / 100)
 
+        # print(">>", data)
         input = np.array(data)
 
         hidden = relu(np.dot(input, self.weights[0]))
@@ -79,7 +83,8 @@ class NNAgent(TrafficAgent):
             # zero, grab the current network's duration setting
             # for it.
             self.traffic_lights[id]["duration"] -= 1
-            if self.traffic_lights[id]["duration"] <= -1:
+            
+            if self.traffic_lights[id]["duration"] <= -1:  
                 index = self.traffic_light_ids.index(id)
                 duration = durations[index]
                 self.traffic_lights[id]["duration"] = duration
@@ -111,7 +116,8 @@ def map(value: float) -> float:
     return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))
 
 
-def mate(a: NNAgent, b: NNAgent, mutation_rate = 0.0) -> NNAgent:
+def mate(simulation, a: NNAgent, b: NNAgent, mutation_rate = 0.0) -> NNAgent:
+    simulation.start()
     weights = []
     for index_weight, weight in enumerate(a.weights):
         new_weight = np.copy(weight)
@@ -130,4 +136,4 @@ def mate(a: NNAgent, b: NNAgent, mutation_rate = 0.0) -> NNAgent:
 
         weights.append(new_weight)
 
-    return NNAgent(a.simulation, hidden_layer_size=a.hidden_layer_size, weights=weight)
+    return NNAgent(simulation, hidden_layer_size=a.hidden_layer_size, weights=weight)
