@@ -16,12 +16,12 @@ population = []
     
 trainer = Trainer(
     simulation,
-    10,
+    25,
     iterations_per=1,
-    population_size=10,
+    population_size=20,
     mutation_rate=0.007,
     crossover=2,
-    population = population
+    population=population
 )
 
 trainer.train()
