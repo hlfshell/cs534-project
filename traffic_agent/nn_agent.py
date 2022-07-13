@@ -23,7 +23,7 @@ class NNAgent(TrafficAgent):
         neurons_per_layer = 50,
         hidden_layers = 3,
         weights = None,
-        id: UUID = None,
+        id: UUID = None
     ):
         '''
         Note - a simulation must be active to create a NNAgent
