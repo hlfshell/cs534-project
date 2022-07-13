@@ -73,7 +73,7 @@ class Trainer():
             # is based upon the lowest fitness score, but we want
             # that to have the highest weight. So we need to take the
             # inverse of that score to offset the weight.
-            weighted_fitness_scores = [1/(x**2) for x in fitness_scores]
+            weighted_fitness_scores = [1/(x) for x in fitness_scores]
 
             new_population: List[NNAgent] = []
             if self.crossover > 0:
