@@ -1,12 +1,12 @@
 from __future__ import annotations
 from math import floor
 from random import uniform
+from uuid import UUID
 import numpy as np
 
-import traci
+import pickle
 
-from collections import defaultdict
-from typing import Dict, List
+from typing import List
 from traffic_agent.sumo import Simulation
 from traffic_agent.traffic_controller import TrafficAgent
 
@@ -21,7 +21,8 @@ class NNAgent(TrafficAgent):
         self,
         simulation: Simulation,
         hidden_layer_size=100,
-        weights = None
+        weights = None,
+        id: UUID = None,
     ):
         '''
         Note - a simulation must be active to create a NNAgent
@@ -29,6 +30,9 @@ class NNAgent(TrafficAgent):
         induction loops
         '''
         super().__init__()
+
+        if id is not None:
+            self._id = id
 
         self.hidden_layer_size = hidden_layer_size
         
@@ -45,14 +49,15 @@ class NNAgent(TrafficAgent):
         self.traffic_light_ids = traffic_lights
         self.traffic_lights = simulation.get_traffic_lights()
 
-        input_size = 2*len(detectors) # For each detector, we take 2 stats
-        # input_size = len(detectors) # For each detector, we take 2 stats
-        output_size = len(traffic_lights)
+        if len(self.weights) == 0:
+            input_size = 2*len(detectors) # For each detector, we take 2 stats
+            # input_size = len(detectors) # For each detector, we take 2 stats
+            output_size = len(traffic_lights)
 
-        self.weights = [
-            np.random.uniform(low=-1, high=1, size=(input_size, self.hidden_layer_size)),
-            np.random.uniform(low=-1, high=1, size=(self.hidden_layer_size, output_size)),
-        ]
+            self.weights = [
+                np.random.uniform(low=-1, high=1, size=(input_size, self.hidden_layer_size)),
+                np.random.uniform(low=-1, high=1, size=(self.hidden_layer_size, output_size)),
+            ]
 
     def infer(self, simulation: Simulation) -> List[int]:
         detectors = simulation.get_detectors()
@@ -90,12 +95,31 @@ class NNAgent(TrafficAgent):
                 self.traffic_lights[id]["duration"] = duration
                 simulation.set_traffic_light_duration(id, duration)
 
-    def save(self):
-        raise NotImplemented
+    def save(self, filepath: str):
+        '''
+        This serializes the agent and writes it to the file
+        Generally the only thing we need to save an agent
+        is its weights. Due to lack of time we'll use
+        pickle, as problematic as that is. 
+        '''
+        with open(filepath, 'wb') as file:
+            data = {
+                "id": self._id,
+                "weights": self.weights,
+                "hidden_layers": self.hidden_layer_size
+            }
+            pickle.dump(data, file)
     
     @classmethod
-    def load(self) -> NNAgent:
-        raise NotImplemented
+    def load(self, filepath: str, simulation: Simulation) -> NNAgent:
+        with open(filepath, 'rb') as file:
+            data = pickle.load(file)
+            return NNAgent(
+                simulation,
+                hidden_layer_size=data["hidden_layers"],
+                weights=data["weights"],
+                id = data["id"]
+            )
 
 
 # standard sigmoid activation function
