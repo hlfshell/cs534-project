@@ -9,10 +9,10 @@ simulation.start()
 
 population = []
 
-population_directory = "populations/population_2"
-for filepath in os.listdir(population_directory):
-    print(filepath)
-    population.append(NNAgent.load(filepath, simulation))
+# population_directory = "populations/population_2"
+# for filepath in os.listdir(population_directory):
+#     print(filepath)
+#     population.append(NNAgent.load(filepath, simulation))
     
 trainer = Trainer(
     simulation,
