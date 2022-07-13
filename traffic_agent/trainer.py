@@ -1,6 +1,4 @@
-
-
-
+from pathlib import Path
 from random import choices
 from typing import List
 from traffic_agent.nn_agent import NNAgent, mate
@@ -50,14 +48,23 @@ class Trainer():
             fitness_scores = [x[0] for x in sorted_fitness_population]
             self.population = [x[1] for x in sorted_fitness_population]
 
+            # Save the best agent and the entire population
+            best_file_path = f"best_model_generation_{generation+1}.pk"
+            population_folder = f"populations/population_{generation+1}"
+            Path(population_folder).mkdir(parents=True, exist_ok=True)
+
+            self.population[0].save(best_file_path)
+            for index, agent in enumerate(self.population):
+                agent.save(f"{population_folder}/agent_{index}.pk")
+
             # Now that we have our fittest, save the fittest and announce
             # it
-
             print("****************************************************")
             print(f"Generation {generation+1} results:")
             print(f"Healthiest agent is {self.population[0]._id} with a fitness of {fitness_scores[0]}")
             print(f"Average fitness was {sum(fitness_scores)/len(fitness_scores)}")
             print(f"Worst score was {fitness_scores[-1]}")
+            print(f"Best agent saved to {best_file_path}; population saved to {population_folder}")
             print("****************************************************")
 
             # Now it's time for the networks to produce the next generation
