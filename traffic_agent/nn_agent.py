@@ -115,7 +115,8 @@ class NNAgent(TrafficAgent):
             data = {
                 "id": self._id,
                 "weights": self.weights,
-                "hidden_layers": self.neurons_per_layer
+                "neurons_per_layer": self.neurons_per_layer,
+                "hidden_layers": self.hidden_layers
             }
             pickle.dump(data, file)
     
@@ -125,7 +126,8 @@ class NNAgent(TrafficAgent):
             data = pickle.load(file)
             return NNAgent(
                 simulation,
-                hidden_layer_size=data["hidden_layers"],
+                neurons_per_layer=data["neurons_per_layer"],
+                hidden_layers=data["hidden_layers"],
                 weights=data["weights"],
                 id = data["id"]
             )
@@ -169,4 +171,4 @@ def mate(simulation, a: NNAgent, b: NNAgent, mutation_rate = 0.0) -> NNAgent:
 
         weights.append(new_weight)
 
-    return NNAgent(simulation, hidden_layer_size=a.neurons_per_layer, weights=weight)
+    return NNAgent(simulation, neurons_per_layer=a.neurons_per_layer, hidden_layers=a.hidden_layers,weights=weight)
