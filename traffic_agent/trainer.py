@@ -2,6 +2,8 @@ from pathlib import Path
 from random import choices
 from typing import List
 from traffic_agent.nn_agent import NNAgent, mate
+from traffic_agent.averaged_nn_agent import AveragedNNAgent
+from traffic_agent.averaged_nn_agent import mate as averaged_mate
 from traffic_agent.sumo import Simulation
 
 
@@ -15,7 +17,9 @@ class Trainer():
         population_size: int = 50,
         mutation_rate: float = 0.0,
         crossover: int = 0,
-        population: List[NNAgent] = []
+        population: List[NNAgent] = [],
+        agent = NNAgent,
+        mate = mate
     ):
         self.simulation = simulation
         self.generations = generations
@@ -24,11 +28,14 @@ class Trainer():
         self.mutation_rate = mutation_rate
         self.crossover = crossover
 
+        self.Agent = agent
+        self.mate = mate
+
         self.population: List[NNAgent] = population
         if len(population) == 0:
             simulation.start()
             while len(self.population) < self.population_size:
-                self.population.append(NNAgent(simulation))
+                self.population.append(self.Agent(simulation))
             simulation.shutdown()
 
     def train(self):
@@ -84,14 +91,17 @@ class Trainer():
                 # fitnesses
                 fitnesses = []
             
+            pairings = []
             while len(new_population) < self.population_size:
                 a = choices(self.population, weights=weighted_fitness_scores)[0]
                 b = None
                 while b != a:
                     b = choices(self.population, weights=weighted_fitness_scores)[0]
 
-                agent = mate(self.simulation, a, b, self.mutation_rate)
+                pairings.append((a._id, b._id))
+                agent = self.mate(self.simulation, a, b, self.mutation_rate)
                 new_population.append(agent)
+            print("Mate pairings:", pairings)
 
     def find_generation_fitness(self, fitnesses: List[float] =[]) -> List[float]:
         fitnesses_starting_length = len(fitnesses)
