@@ -20,7 +20,8 @@ class NNAgent(TrafficAgent):
     def __init__(
         self,
         simulation: Simulation,
-        hidden_layer_size=100,
+        neurons_per_layer = 50,
+        hidden_layers = 3,
         weights = None,
         id: UUID = None,
     ):
@@ -34,7 +35,8 @@ class NNAgent(TrafficAgent):
         if id is not None:
             self._id = id
 
-        self.hidden_layer_size = hidden_layer_size
+        self.neurons_per_layer = neurons_per_layer
+        self.hidden_layers = hidden_layers
         
         if weights is not None:
             self.weights = weights
@@ -54,10 +56,17 @@ class NNAgent(TrafficAgent):
             # input_size = len(detectors) # For each detector, we take 2 stats
             output_size = len(traffic_lights)
 
-            self.weights = [
-                np.random.uniform(low=-1, high=1, size=(input_size, self.hidden_layer_size)),
-                np.random.uniform(low=-1, high=1, size=(self.hidden_layer_size, output_size)),
-            ]
+            input_weights = np.random.uniform(low=-1, high=1, size=(input_size, self.neurons_per_layer))
+
+            self.weights = [input_weights]
+            for _ in range(0, self.hidden_layers):
+                self.weights.append(
+                    np.random.uniform(low=-1, high=1, size=(self.neurons_per_layer, self.neurons_per_layer))
+                )
+
+            output_weights = np.random.uniform(low=-1, high=1, size=(self.neurons_per_layer, output_size))
+
+            self.weights.append(output_weights)
 
     def infer(self, simulation: Simulation) -> List[int]:
         detectors = simulation.get_detectors()
@@ -106,7 +115,7 @@ class NNAgent(TrafficAgent):
             data = {
                 "id": self._id,
                 "weights": self.weights,
-                "hidden_layers": self.hidden_layer_size
+                "hidden_layers": self.neurons_per_layer
             }
             pickle.dump(data, file)
     
@@ -160,4 +169,4 @@ def mate(simulation, a: NNAgent, b: NNAgent, mutation_rate = 0.0) -> NNAgent:
 
         weights.append(new_weight)
 
-    return NNAgent(simulation, hidden_layer_size=a.hidden_layer_size, weights=weight)
+    return NNAgent(simulation, hidden_layer_size=a.neurons_per_layer, weights=weight)
