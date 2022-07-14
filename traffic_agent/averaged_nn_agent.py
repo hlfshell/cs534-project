@@ -92,7 +92,7 @@ class AveragedNNAgent(TrafficAgent):
                 self.detectors[id]["occupancy"] = self.detectors[id]["occupancy"][0:LAST_N_SAMPLES] 
             
 
-    def infer(self, simulation: Simulation) -> List[int]:
+    def infer(self, simulation: Simulation) -> List[float]:
         # Build the data array
         data = []
 
@@ -117,8 +117,7 @@ class AveragedNNAgent(TrafficAgent):
         return durations
     
     def step(self, simulation: Simulation):
-        self.update_detectors(simulation)
-        durations = self.infer(simulation)
+        durations: List[float] = None 
 
         for id in self.traffic_light_ids:
             # Decrement each traffic light duration by one, as
@@ -127,7 +126,10 @@ class AveragedNNAgent(TrafficAgent):
             # for it.
             self.traffic_lights[id]["duration"] -= 1
             
-            if self.traffic_lights[id]["duration"] <= -1:  
+            if self.traffic_lights[id]["duration"] <= -1:
+                if durations is None:
+                    self.update_detectors(simulation)
+                    durations = self.infer(simulation)
                 index = self.traffic_light_ids.index(id)
                 duration = durations[index]
                 self.traffic_lights[id]["duration"] = duration

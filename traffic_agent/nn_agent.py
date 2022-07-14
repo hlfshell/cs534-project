@@ -68,7 +68,7 @@ class NNAgent(TrafficAgent):
 
             self.weights.append(output_weights)
 
-    def infer(self, simulation: Simulation) -> List[int]:
+    def infer(self, simulation: Simulation) -> List[float]:
         detectors = simulation.get_detectors()
         data = []
         for id in detectors.keys():
@@ -89,7 +89,7 @@ class NNAgent(TrafficAgent):
         return durations
     
     def step(self, simulation: Simulation):
-        durations = self.infer(simulation)
+        durations: List[float] = None
 
         for id in self.traffic_light_ids:
             # Decrement each traffic light duration by one, as
@@ -98,7 +98,9 @@ class NNAgent(TrafficAgent):
             # for it.
             self.traffic_lights[id]["duration"] -= 1
             
-            if self.traffic_lights[id]["duration"] <= -1:  
+            if self.traffic_lights[id]["duration"] <= -1: 
+                if durations is None:
+                    durations = self.infer(simulation) 
                 index = self.traffic_light_ids.index(id)
                 duration = durations[index]
                 self.traffic_lights[id]["duration"] = duration
