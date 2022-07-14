@@ -11,6 +11,7 @@ from traffic_agent.trainer import Trainer
 simulation = Simulation("./chicago_02/chicago_02.sumocfg")
 simulation.start()
 
+population = []
 # population_directory = "populations/population_14"
 # print(f"Loading population from {population_directory}")
 # for filepath in os.listdir(population_directory):
@@ -23,7 +24,7 @@ trainer = Trainer(
     population_size=50,
     mutation_rate=0.05,
     crossover=2,
-    # population=population,
+    population=population,
     agent=ScheduleAgent,
     mate=schedule_mate
 )
