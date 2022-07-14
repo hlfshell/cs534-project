@@ -21,6 +21,7 @@ class Simulation():
         self.simulation_config = simulation_config
         self.steps = 0
         self.stats_file = self.get_stats_file()
+        self.osm_file = self.get_osm_file()
         self.running = False
     
     def get_stats_file(self):
@@ -31,6 +32,13 @@ class Simulation():
             dirpath = dirname(self.simulation_config)
             return join(dirpath, filepath)
 
+    def get_osm_file(self):
+        tree = ET.parse(self.simulation_config)
+        root = tree.getroot()
+        for item in root.findall("input/route-files"):
+            filepath = item.get("value")
+            dirpath = dirname(self.simulation_config)
+            return join(dirpath, filepath)
 
     def start(self):
         if self.running:
@@ -94,6 +102,9 @@ class Simulation():
             }
         
         return lights
+    
+    def get_traffic_light_phase(self, id: str):
+        return traci.trafficlight.getPhase()
 
     def set_traffic_light_duration(self, id:str, duration: int):
         traci.trafficlight.setPhaseDuration(id, duration)
@@ -114,3 +125,22 @@ class Simulation():
             stats['totalDepartDelay'] = float(item.get('totalDepartDelay'))
 
             return stats
+
+    def get_light_durations(self):
+        tree = ET.parse(self.osm_file)
+        root = tree.getroot()
+
+        lights = {}
+        for item in root.findall("tlLogic"):
+            id = item.get("id")
+            phases = []
+            for phase in item.findall("phase"):
+                phases.append({
+                    "duration": phase.get("duration"),
+                    "min_duration": phase.get("maxDur"),
+                    "max_duration": phase.get("maxDur")
+                })
+            lights[id] = phases
+        
+        return lights
+        
