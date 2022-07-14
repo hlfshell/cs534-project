@@ -95,7 +95,7 @@ class Trainer():
             while len(new_population) < self.population_size:
                 a = choices(self.population, weights=weighted_fitness_scores)[0]
                 b = None
-                while b != a:
+                while b is None or b == a:
                     b = choices(self.population, weights=weighted_fitness_scores)[0]
 
                 pairings.append((a._id, b._id))
