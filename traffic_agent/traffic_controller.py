@@ -52,6 +52,11 @@ class TrafficAgent():
         raise NotImplemented
     
     def __eq__(self, other: TrafficAgent) -> bool:
-        if other == None:
+        if other is None:
             return False
         return self._id == other._id
+    
+    def __le__(self, other: TrafficAgent) -> bool:
+        if other is None:
+            return False
+        return self._id < other._id
