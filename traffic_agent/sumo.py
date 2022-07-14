@@ -35,7 +35,7 @@ class Simulation():
     def get_osm_file(self):
         tree = ET.parse(self.simulation_config)
         root = tree.getroot()
-        for item in root.findall("input/route-files"):
+        for item in root.findall("input/net-file"):
             filepath = item.get("value")
             dirpath = dirname(self.simulation_config)
             return join(dirpath, filepath)
@@ -104,7 +104,7 @@ class Simulation():
         return lights
     
     def get_traffic_light_phase(self, id: str):
-        return traci.trafficlight.getPhase()
+        return traci.trafficlight.getPhase(id)
 
     def set_traffic_light_duration(self, id:str, duration: int):
         traci.trafficlight.setPhaseDuration(id, duration)
@@ -129,8 +129,9 @@ class Simulation():
     def get_light_durations(self):
         tree = ET.parse(self.osm_file)
         root = tree.getroot()
-
+        
         lights = {}
+
         for item in root.findall("tlLogic"):
             id = item.get("id")
             phases = []

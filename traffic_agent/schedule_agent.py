@@ -42,6 +42,7 @@ class ScheduleAgent(TrafficAgent):
                 self.schedule[id] = phases
 
         self.traffic_lights = simulation.get_traffic_lights()
+        self.traffic_light_ids = simulation.get_traffic_light_ids()
 
     def step(self, simulation: Simulation):
         for id in self.traffic_light_ids:
@@ -52,8 +53,7 @@ class ScheduleAgent(TrafficAgent):
             self.traffic_lights[id]["duration"] -= 1
             
             if self.traffic_lights[id]["duration"] <= -1:  
-                self.schedule[id]
-                index = simulation.get_traffic_light_phase()
+                index = simulation.get_traffic_light_phase(id)
                 duration = self.schedule[id][index]["duration"]
                 simulation.set_traffic_light_duration(id, duration)
                 self.traffic_lights[id]["duration"] = duration
@@ -65,6 +65,7 @@ class ScheduleAgent(TrafficAgent):
         is its weights. Due to lack of time we'll use
         pickle, as problematic as that is. 
         '''
+        return
         with open(filepath, 'wb') as file:
             data = {
                 "id": self._id,
@@ -76,6 +77,7 @@ class ScheduleAgent(TrafficAgent):
     
     @classmethod
     def load(self, filepath: str, simulation: Simulation) -> NNAgent:
+        return
         with open(filepath, 'rb') as file:
             data = pickle.load(file)
             return NNAgent(
@@ -98,7 +100,7 @@ def mate(simulation, a: ScheduleAgent, b: ScheduleAgent, mutation_rate = 0.0) ->
             if uniform(0, 1) < mutation_rate:
                 schedule[id].append({ "duration": phase["duration"] })
             elif uniform(0, 1) < 0.5: # Parent is A!
-                schedule[id].append({ "duration": b.schedule["id"][index]["duration"] })
+                schedule[id].append({ "duration": b.schedule[id][index]["duration"] })
             else: # Parent is B!
                 schedule[id].append({ "duration": uniform(MIN_PHASE_DURATION, MAX_PHASE_DURATION) })
 
