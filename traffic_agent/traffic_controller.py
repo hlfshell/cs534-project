@@ -56,7 +56,7 @@ class TrafficAgent():
             return False
         return self._id == other._id
     
-    def __leq__(self, other: TrafficAgent) -> bool:
+    def __le__(self, other: TrafficAgent) -> bool:
         if other is None:
             return False
         return self._id < other._id
