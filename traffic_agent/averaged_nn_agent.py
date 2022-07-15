@@ -7,6 +7,7 @@ import numpy as np
 import pickle
 
 from typing import Dict, List
+from traffic_agent.activation_functions import relu, sigmoid
 from traffic_agent.sumo import Simulation
 from traffic_agent.traffic_controller import TrafficAgent
 
@@ -26,6 +27,7 @@ class AveragedNNAgent(TrafficAgent):
         hidden_layers = 3,
         weights = None,
         id: UUID = None,
+        activation_function=relu
     ):
         '''
         Note - a simulation must be active to create a NNAgent
@@ -47,6 +49,8 @@ class AveragedNNAgent(TrafficAgent):
         
         self.detectors: Dict[str, Dict[str, List[float]]] = {}
 
+        self.activation_function = activation_function
+
         self._prepare_network(simulation)
 
     def _prepare_network(self, simulation: Simulation):
@@ -64,7 +68,6 @@ class AveragedNNAgent(TrafficAgent):
 
         if len(self.weights) == 0:
             input_size = 2*len(detectors) # For each detector, we take 2 stats
-            # input_size = len(detectors) # For each detector, we take 2 stats
             output_size = len(traffic_lights)
 
             input_weights = np.random.uniform(low=-1, high=1, size=(input_size, self.neurons_per_layer))
@@ -82,15 +85,16 @@ class AveragedNNAgent(TrafficAgent):
     def update_detectors(self, simulation: Simulation):
         detectors = simulation.get_detectors()
         for id in self.detectors.keys():
-            speed = detectors[id]["speed"] / 100
+            # We divide here for the sole purpose of getting
+            # magnitude somewhat quick - occupancy is 0-100
+            # for percentage, not 0-1.0 - speed is typically
+            # 0 to 14 m/s
+            speed = detectors[id]["speed"] / 10
             occupancy = detectors[id]["occupancy"] / 100
             self.detectors[id]["speed"].append(speed)
-            if len(self.detectors[id]["speed"]) > LAST_N_SAMPLES:
-                self.detectors[id]["speed"] = self.detectors[id]["speed"][0:LAST_N_SAMPLES]
+            self.detectors[id]["speed"] = self.detectors[id]["speed"][-LAST_N_SAMPLES:]
             self.detectors[id]["occupancy"].append(occupancy)
-            if len(self.detectors[id]["occupancy"]) > LAST_N_SAMPLES:
-                self.detectors[id]["occupancy"] = self.detectors[id]["occupancy"][0:LAST_N_SAMPLES] 
-            
+            self.detectors[id]["occupancy"] = self.detectors[id]["occupancy"][-LAST_N_SAMPLES:]
 
     def infer(self, simulation: Simulation) -> List[float]:
         # Build the data array
@@ -103,12 +107,18 @@ class AveragedNNAgent(TrafficAgent):
             data.append(sum(speeds)/len(speeds))
             data.append(sum(occupancies)/len(occupancies))
 
-
         input = np.array(data)
 
-        hidden = relu(np.dot(input, self.weights[0]))
+        # For each hidden layer, perform forward inference
+        # Note that we force sigmoid towards output as we
+        # always want a 0-1 output.
+        hidden = None
+        a = input
+        for index in range(0, self.hidden_layers):
+            hidden = self.activation_function(np.dot(a, self.weights[index]))
+            a = hidden
 
-        output = sigmoid(np.dot(hidden, self.weights[1]))
+        output = sigmoid(np.dot(hidden, self.weights[-1]))
 
         # output is a range from 0-1, so lets convert that
         # to our min/max phase duration
@@ -162,16 +172,6 @@ class AveragedNNAgent(TrafficAgent):
                 weights=data["weights"],
                 id = data["id"]
             )
-
-
-# standard sigmoid activation function
-def sigmoid(input):
-    return 1/(1+np.exp(-input))
-
-
-# Standard relu
-def relu(x):
-    return (x > 0) * x
 
 
 def map(value: float) -> float:
