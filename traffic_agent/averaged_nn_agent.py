@@ -11,8 +11,8 @@ from traffic_agent.sumo import Simulation
 from traffic_agent.traffic_controller import TrafficAgent
 
 
-MIN_PHASE_DURATION = 0
-MAX_PHASE_DURATION = 10
+MIN_PHASE_DURATION = 3
+MAX_PHASE_DURATION = 20
 
 LAST_N_SAMPLES = 5
 
@@ -117,33 +117,13 @@ class AveragedNNAgent(TrafficAgent):
         return durations
     
     def step(self, simulation: Simulation):
-        changes: List[float] = None
-
-        
-        if changes is None:
-            self.update_detectors(simulation)
-        
-        changes = self.infer(simulation)
-        #print(changes)
-        
-        
+        durations: List[float] = None 
 
         for id in self.traffic_light_ids:
-            
-            
-            
             # Decrement each traffic light duration by one, as
             # one step is one second. For each that are set to
             # zero, grab the current network's duration setting
             # for it.
-            index = self.traffic_light_ids.index(id)
-            change = changes[index]
-            
-            if change >= 5:
-                simulation.inc_traffic_light_phase(id)
-            
-            
-            """
             self.traffic_lights[id]["duration"] -= 1
             
             if self.traffic_lights[id]["duration"] <= -1:
@@ -154,7 +134,6 @@ class AveragedNNAgent(TrafficAgent):
                 duration = durations[index]
                 self.traffic_lights[id]["duration"] = duration
                 simulation.set_traffic_light_duration(id, duration)
-            """
 
     def save(self, filepath: str):
         '''
@@ -198,8 +177,6 @@ def relu(x):
 def map(value: float) -> float:
     outMin = MIN_PHASE_DURATION
     outMax = MAX_PHASE_DURATION
-
-    
     inMin = 0
     inMax = 1
     return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))

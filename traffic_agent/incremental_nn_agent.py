@@ -10,14 +10,8 @@ from typing import Dict, List
 from traffic_agent.sumo import Simulation
 from traffic_agent.traffic_controller import TrafficAgent
 
-
-MIN_PHASE_DURATION = 0
-MAX_PHASE_DURATION = 10
-
 LAST_N_SAMPLES = 5
-
 MIN_PHASE = 3
-
 
 class IncrementalNNAgent(TrafficAgent):
 
@@ -93,7 +87,6 @@ class IncrementalNNAgent(TrafficAgent):
             if len(self.detectors[id]["occupancy"]) > LAST_N_SAMPLES:
                 self.detectors[id]["occupancy"] = self.detectors[id]["occupancy"][0:LAST_N_SAMPLES] 
             
-
     def infer(self, simulation: Simulation) -> List[float]:
         # Build the data array
         data = []
@@ -113,10 +106,8 @@ class IncrementalNNAgent(TrafficAgent):
         output = sigmoid(np.dot(hidden, self.weights[1]))
 
         return output
-
     
     def step(self, simulation: Simulation):
-                
         # Update detector state
         self.update_detectors(simulation)
         
@@ -128,17 +119,21 @@ class IncrementalNNAgent(TrafficAgent):
                     
             index = self.traffic_light_ids.index(id)
             change = changes[index]
+                        
+            #Increment counter
+            self.traffic_lights[id]["counter"] = self.traffic_lights[id]["counter"] + 1
             
-            #print(simulation.get_traffic_light_spent_duration(id))
-            self.traffic_lights[id]["cntr"] = self.traffic_lights[id]["cntr"] + 1           
-                                
-            if change >= 0.5:                
-                
-                if self.traffic_lights[id]["cntr"] > MIN_PHASE:
-                
-                    self.traffic_lights[id]["cntr"] = 0
-                    simulation.inc_traffic_light_phase(id)
+            #Update phases
+            temp_phase = simulation.get_phase(id)            
+            if self.traffic_lights[id]["phase"] != temp_phase:
+                self.traffic_lights[id]["counter"] = 0
+                self.traffic_lights[id]["phase"] = temp_phase
             
+            # Increment phase if determined by NN and counter > MIN_PHASE                                 
+            if change >= 0.5:                                
+                if self.traffic_lights[id]["counter"] > MIN_PHASE:            
+                    simulation.inc_traffic_light_phase(id)    
+                    #temp_phase = 6
 
     def save(self, filepath: str):
         '''
@@ -168,16 +163,13 @@ class IncrementalNNAgent(TrafficAgent):
                 id = data["id"]
             )
 
-
 # standard sigmoid activation function
 def sigmoid(input):
     return 1/(1+np.exp(-input))
 
-
 # Standard relu
 def relu(x):
     return (x > 0) * x
-
 
 def mate(simulation, a: IncrementalNNAgent, b: IncrementalNNAgent, mutation_rate = 0.0) -> IncrementalNNAgent:
     simulation.start()
