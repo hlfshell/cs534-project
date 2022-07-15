@@ -1,3 +1,4 @@
+from os import O_WRONLY
 from pathlib import Path
 from random import choices
 from typing import List
@@ -14,9 +15,9 @@ class Trainer():
         simulation: Simulation,
         generations: int,
         iterations_per: int = 1,
-        population_size: int = 50,
-        mutation_rate: float = 0.0,
-        crossover: int = 0,
+        population_size: int = 30,  #50
+        mutation_rate: float = 0.007,
+        crossover: int = 2,
         population: List[NNAgent] = [],
         agent = NNAgent,
         mate = mate
@@ -49,9 +50,13 @@ class Trainer():
             # The fitness index is equivalent to the
             # population index, so we must sort both
             # equvialently to do this right
-            fitness_population = zip(fitnesses, self.population)
-            sorted_fitness_population = sorted(fitness_population)
-
+            fitness_population = list(zip(fitnesses, self.population))
+            #fitness_population = list(zip( self.population, fitnesses))      
+            print(list(fitness_population))    
+            #sorted_fitness_population1 = list(sorted(fitness_population, key = lambda x: x[0], reverse=True))
+            sorted_fitness_population = sorted(fitness_population, key = lambda x: x[0], reverse=True)
+            print(sorted_fitness_population)
+            #print(sorted_fitness_population1)
             fitness_scores = [x[0] for x in sorted_fitness_population]
             self.population = [x[1] for x in sorted_fitness_population]
 
@@ -80,7 +85,7 @@ class Trainer():
             # is based upon the lowest fitness score, but we want
             # that to have the highest weight. So we need to take the
             # inverse of that score to offset the weight.
-            weighted_fitness_scores = [1/(x) for x in fitness_scores]
+            weighted_fitness_scores = [x for x in fitness_scores]
 
             new_population: List[NNAgent] = []
             if self.crossover > 0:
@@ -129,7 +134,7 @@ class Trainer():
 
         # Generate a fitness from the provided stats
         # For now I'll just use totalTravelTime
-        fitness = stats['totalTravelTime']
+        fitness = stats['speed']
 
         self.simulation.shutdown()
 

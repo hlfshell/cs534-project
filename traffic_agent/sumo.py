@@ -1,6 +1,10 @@
 from os import remove
+import os
 import sys
 from typing import Any, Dict, List
+from os.path import dirname, join
+sys.path.append(os.path.join(os.environ.get("SUMO_HOME"), 'tools'))
+
 import traci
 from sumolib import checkBinary
 import xml.etree.ElementTree as ET

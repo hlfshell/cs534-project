@@ -6,8 +6,8 @@ from uuid import uuid4
 from traffic_agent.sumo import Simulation
 
 
-MAX_ALLOWED_STEPS = 5000
-PRINT_EVERY = 250
+MAX_ALLOWED_STEPS = 5000 #5000
+PRINT_EVERY = 250 #250
 # MAX_ALLOWED_STEPS = 100 # For testing
 
 
