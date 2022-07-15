@@ -107,7 +107,6 @@ class Simulation():
             stats['totalTravelTime'] = float(item.get('totalTravelTime'))
             stats['routeLength'] = float(item.get('routeLength'))
             stats['speed'] = float(item.get('speed'))
-            # stats['waiting'] = float(item.get('waiting'))
             stats['timeLoss'] = float(item.get('timeLoss'))
             stats['departDelay'] = float(item.get('departDelay'))
             stats['departDelayWaiting'] = float(item.get('departDelayWaiting'))

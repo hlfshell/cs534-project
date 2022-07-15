@@ -10,7 +10,6 @@ simulation = Simulation("./chicago_02/chicago_02.sumocfg")
 simulation.start()
 
 population = []
-
 # population_directory = "populations/population_14"
 # print(f"Loading population from {population_directory}")
 # for filepath in os.listdir(population_directory):
