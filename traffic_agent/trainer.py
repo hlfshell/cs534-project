@@ -1,6 +1,9 @@
 from pathlib import Path
 from random import choices
+from time import perf_counter
 from typing import List
+from statistics import variance
+
 from traffic_agent.nn_agent import NNAgent, mate
 from traffic_agent.averaged_nn_agent import AveragedNNAgent
 from traffic_agent.averaged_nn_agent import mate as averaged_mate
@@ -40,7 +43,9 @@ class Trainer():
 
     def train(self):
         fitnesses: List[float] = []
+        generation_times = []
         for generation in range(0, self.generations):
+            start_time = perf_counter()
             print("****************************************************")
             print(f"Starting Generation {generation+1}")
             print("****************************************************")
@@ -64,14 +69,19 @@ class Trainer():
             for index, agent in enumerate(self.population):
                 agent.save(f"{population_folder}/agent_{index}.pk")
 
+            end_time = perf_counter()
+            generation_times.append(end_time-start_time)
+
             # Now that we have our fittest, save the fittest and announce
             # it
             print("****************************************************")
             print(f"Generation {generation+1} results:")
             print(f"Healthiest agent is {self.population[0]._id} with a fitness of {fitness_scores[0]}")
             print(f"Average fitness was {sum(fitness_scores)/len(fitness_scores)}")
+            print(f"Variance in fitness scores was {variance(fitness_scores)}")
             print(f"Worst score was {fitness_scores[-1]}")
             print(f"Best agent saved to {best_file_path}; population saved to {population_folder}")
+            print(f"Time it took to complete generation was {generation_times[generation]}")
             print("****************************************************")
 
             # Now it's time for the networks to produce the next generation
@@ -115,7 +125,7 @@ class Trainer():
                 continue
             iteration_fitnesses: List[float] = []
             for _ in range(0, self.iterations_per):
-                print(f"Finding fitness for agent {agent._id}")
+                print(f"Finding fitness for agent {agent._id}, #{index+1}/{len(self.population)}")
                 fitness = self.find_fitness(agent)
                 iteration_fitnesses.append(fitness)
 
