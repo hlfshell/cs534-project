@@ -90,7 +90,8 @@ class Simulation():
             lights[id] = {
                 "phase": phase,
                 "duration": duration,
-                "state": state
+                "state": state,
+                "counter": 0
             }
         
         return lights
