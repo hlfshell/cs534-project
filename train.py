@@ -1,12 +1,13 @@
 import os
 from traffic_agent.averaged_nn_agent import AveragedNNAgent
 from traffic_agent.averaged_nn_agent import mate as averaged_mate
+from traffic_agent.incremental_nn_agent import IncrementalNNAgent
 from traffic_agent.nn_agent import NNAgent
 
 from traffic_agent.sumo import Simulation
 from traffic_agent.trainer import Trainer
 
-simulation = Simulation("./chicago_02/chicago_02.sumocfg")
+simulation = Simulation("./chicago_02/chicago_02.sumocfg", gui=False)
 simulation.start()
 
 population = []
@@ -17,13 +18,13 @@ population = []
 
 trainer = Trainer(
     simulation,
-    25,
+    10,
     iterations_per=1,
-    population_size=20,
+    population_size=10,
     mutation_rate=0.05,
     crossover=2,
     population=population,
-    agent=AveragedNNAgent,
+    agent=IncrementalNNAgent,
     mate=averaged_mate
 )
 
