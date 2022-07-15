@@ -1,5 +1,6 @@
 from __future__ import annotations
 from random import uniform
+import sched
 from uuid import UUID
 
 import pickle
@@ -65,27 +66,21 @@ class ScheduleAgent(TrafficAgent):
         is its weights. Due to lack of time we'll use
         pickle, as problematic as that is. 
         '''
-        return
         with open(filepath, 'wb') as file:
             data = {
                 "id": self._id,
-                "weights": self.weights,
-                "neurons_per_layer": self.neurons_per_layer,
-                "hidden_layers": self.hidden_layers
+                "schedule": self.schedule
             }
             pickle.dump(data, file)
     
     @classmethod
-    def load(self, filepath: str, simulation: Simulation) -> NNAgent:
-        return
+    def load(self, filepath: str, simulation: Simulation) -> ScheduleAgent:
         with open(filepath, 'rb') as file:
             data = pickle.load(file)
-            return NNAgent(
+            return ScheduleAgent(
                 simulation,
-                neurons_per_layer=data["neurons_per_layer"],
-                hidden_layers=data["hidden_layers"],
-                weights=data["weights"],
-                id = data["id"]
+                id = data["id"],
+                schedule = data["schedule"]
             )
 
 
@@ -98,10 +93,10 @@ def mate(simulation, a: ScheduleAgent, b: ScheduleAgent, mutation_rate = 0.0) ->
         for index, phase in enumerate(a.schedule[id]):
             # Determine - parent a, parent b, or mutation?
             if uniform(0, 1) < mutation_rate:
-                schedule[id].append({ "duration": phase["duration"] })
+                schedule[id].append({ "duration": uniform(MIN_PHASE_DURATION, MAX_PHASE_DURATION) })                
             elif uniform(0, 1) < 0.5: # Parent is A!
-                schedule[id].append({ "duration": b.schedule[id][index]["duration"] })
+                schedule[id].append({ "duration": phase["duration"] })
             else: # Parent is B!
-                schedule[id].append({ "duration": uniform(MIN_PHASE_DURATION, MAX_PHASE_DURATION) })
+                schedule[id].append({ "duration": b.schedule[id][index]["duration"] })
 
     return ScheduleAgent(simulation, schedule=schedule)
