@@ -86,17 +86,48 @@ class Simulation():
             phase = traci.trafficlight.getPhase(id)
             duration = traci.trafficlight.getNextSwitch(id)-traci.simulation.getTime()
             state = traci.trafficlight.getRedYellowGreenState(id)
-
+            #cntr = traci.trafficlight.getPhaseDuration(id) - duration
+          
+        
             lights[id] = {
                 "phase": phase,
                 "duration": duration,
-                "state": state
+                "state": state,
+                "cntr" : 0
             }
         
         return lights
 
     def set_traffic_light_duration(self, id:str, duration: int):
         traci.trafficlight.setPhaseDuration(id, duration)
+        
+    def inc_traffic_light_phase(self, id:str):
+        
+        # Get current phase
+        phase = traci.trafficlight.getPhase(id)
+        
+        # Hardcoded for Chicago 02 sim
+        if id == "J02" or id == "J05" or id == "J08" :
+            if phase < 5:
+                traci.trafficlight.setPhase(id, phase + 1)
+            else:
+                traci.trafficlight.setPhase(id, 0)       
+        else:
+            if phase < 3:
+                traci.trafficlight.setPhase(id, phase + 1)
+            else:
+                traci.trafficlight.setPhase(id, 0)
+                
+
+
+    def get_traffic_light_spent_duration(self, id:str):
+        
+        return traci.trafficlight.getPhaseDuration(id) - traci.trafficlight.getNextSwitch(id) + traci.simulation.getTime()
+            
+        
+        
+        
+        
 
     def get_stats(self):
         tree = ET.parse(self.stats_file)

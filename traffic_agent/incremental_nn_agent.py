@@ -16,8 +16,10 @@ MAX_PHASE_DURATION = 10
 
 LAST_N_SAMPLES = 5
 
+MIN_PHASE = 3
 
-class AveragedNNAgent(TrafficAgent):
+
+class IncrementalNNAgent(TrafficAgent):
 
     def __init__(
         self,
@@ -110,51 +112,33 @@ class AveragedNNAgent(TrafficAgent):
 
         output = sigmoid(np.dot(hidden, self.weights[1]))
 
-        # output is a range from 0-1, so lets convert that
-        # to our min/max phase duration
-        durations: List[int] = [floor(map(x)) for x in output]
+        return output
 
-        return durations
     
     def step(self, simulation: Simulation):
-        changes: List[float] = None
-
+                
+        # Update detector state
+        self.update_detectors(simulation)
         
-        if changes is None:
-            self.update_detectors(simulation)
-        
+        # Get traffic light phase changes from NN
         changes = self.infer(simulation)
-        #print(changes)
-        
-        
-
+       
+        # Increment traffic light phase if change > threshold
         for id in self.traffic_light_ids:
-            
-            
-            
-            # Decrement each traffic light duration by one, as
-            # one step is one second. For each that are set to
-            # zero, grab the current network's duration setting
-            # for it.
+                    
             index = self.traffic_light_ids.index(id)
             change = changes[index]
             
-            if change >= 5:
-                simulation.inc_traffic_light_phase(id)
+            #print(simulation.get_traffic_light_spent_duration(id))
+            self.traffic_lights[id]["cntr"] = self.traffic_lights[id]["cntr"] + 1           
+                                
+            if change >= 0.5:                
+                
+                if self.traffic_lights[id]["cntr"] > MIN_PHASE:
+                
+                    self.traffic_lights[id]["cntr"] = 0
+                    simulation.inc_traffic_light_phase(id)
             
-            
-            """
-            self.traffic_lights[id]["duration"] -= 1
-            
-            if self.traffic_lights[id]["duration"] <= -1:
-                if durations is None:
-                    self.update_detectors(simulation)
-                    durations = self.infer(simulation)
-                index = self.traffic_light_ids.index(id)
-                duration = durations[index]
-                self.traffic_lights[id]["duration"] = duration
-                simulation.set_traffic_light_duration(id, duration)
-            """
 
     def save(self, filepath: str):
         '''
@@ -173,10 +157,10 @@ class AveragedNNAgent(TrafficAgent):
             pickle.dump(data, file)
     
     @classmethod
-    def load(self, filepath: str, simulation: Simulation) -> AveragedNNAgent:
+    def load(self, filepath: str, simulation: Simulation) -> IncrementalNNAgent:
         with open(filepath, 'rb') as file:
             data = pickle.load(file)
-            return AveragedNNAgent(
+            return IncrementalNNAgent(
                 simulation,
                 neurons_per_layer=data["neurons_per_layer"],
                 hidden_layers=data["hidden_layers"],
@@ -195,17 +179,7 @@ def relu(x):
     return (x > 0) * x
 
 
-def map(value: float) -> float:
-    outMin = MIN_PHASE_DURATION
-    outMax = MAX_PHASE_DURATION
-
-    
-    inMin = 0
-    inMax = 1
-    return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))
-
-
-def mate(simulation, a: AveragedNNAgent, b: AveragedNNAgent, mutation_rate = 0.0) -> AveragedNNAgent:
+def mate(simulation, a: IncrementalNNAgent, b: IncrementalNNAgent, mutation_rate = 0.0) -> IncrementalNNAgent:
     simulation.start()
     weights = []
     for index_weight, weight in enumerate(a.weights):
@@ -225,4 +199,4 @@ def mate(simulation, a: AveragedNNAgent, b: AveragedNNAgent, mutation_rate = 0.0
 
         weights.append(new_weight)
 
-    return AveragedNNAgent(simulation, neurons_per_layer=a.neurons_per_layer, hidden_layers=a.hidden_layers,weights=weight)
+    return IncrementalNNAgent(simulation, neurons_per_layer=a.neurons_per_layer, hidden_layers=a.hidden_layers,weights=weight)
