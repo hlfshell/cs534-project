@@ -10,7 +10,7 @@ from traffic_agent.traffic_controller import TrafficAgent
 
 
 MIN_PHASE_DURATION = 3
-MAX_PHASE_DURATION = 45
+MAX_PHASE_DURATION = 25
 
 
 class ScheduleAgent(TrafficAgent):
