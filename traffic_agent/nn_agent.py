@@ -7,6 +7,7 @@ import numpy as np
 import pickle
 
 from typing import List
+from traffic_agent.activation_functions import relu, sigmoid
 from traffic_agent.sumo import Simulation
 from traffic_agent.traffic_controller import TrafficAgent
 
@@ -23,7 +24,8 @@ class NNAgent(TrafficAgent):
         neurons_per_layer = 50,
         hidden_layers = 3,
         weights = None,
-        id: UUID = None
+        id: UUID = None,
+        activation_function=relu
     ):
         '''
         Note - a simulation must be active to create a NNAgent
@@ -43,6 +45,8 @@ class NNAgent(TrafficAgent):
         else:
             self.weights: List[np.ndarray] = []
 
+        self.activation_function = activation_function
+
         self._prepare_network(simulation)
 
     def _prepare_network(self, simulation: Simulation):
@@ -53,7 +57,6 @@ class NNAgent(TrafficAgent):
 
         if len(self.weights) == 0:
             input_size = 2*len(detectors) # For each detector, we take 2 stats
-            # input_size = len(detectors) # For each detector, we take 2 stats
             output_size = len(traffic_lights)
 
             input_weights = np.random.uniform(low=-1, high=1, size=(input_size, self.neurons_per_layer))
@@ -75,12 +78,18 @@ class NNAgent(TrafficAgent):
             data.append(detectors[id]["speed"] / 100)
             data.append(detectors[id]["occupancy"] / 100)
 
-        # print(">>", data)
         input = np.array(data)
 
-        hidden = relu(np.dot(input, self.weights[0]))
+        # For each hidden layer, perform forward inference
+        # Note that we force sigmoid towards output as we
+        # always want a 0-1 output.
+        hidden = None
+        a = input
+        for index in range(0, self.hidden_layers):
+            hidden = self.activation_function(np.dot(a, self.weights[index]))
+            a = hidden
 
-        output = sigmoid(np.dot(hidden, self.weights[1]))
+        output = sigmoid(np.dot(hidden, self.weights[-1]))
 
         # output is a range from 0-1, so lets convert that
         # to our min/max phase duration
@@ -133,16 +142,6 @@ class NNAgent(TrafficAgent):
                 weights=data["weights"],
                 id = data["id"]
             )
-
-
-# standard sigmoid activation function
-def sigmoid(input):
-    return 1/(1+np.exp(-input))
-
-
-# Standard relu
-def relu(x):
-    return (x > 0) * x
 
 
 def map(value: float) -> float:

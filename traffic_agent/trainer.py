@@ -79,8 +79,10 @@ class Trainer():
             # Our weighted probability of choosing a fitness score
             # is based upon the lowest fitness score, but we want
             # that to have the highest weight. So we need to take the
-            # inverse of that score to offset the weight.
-            weighted_fitness_scores = [1/(x) for x in fitness_scores]
+            # difference between the max and the current score, which
+            # gives us a range from 0 -> our lowest score by difference.
+            # This preserves linearity as well.
+            weighted_fitness_scores = [max(fitness_scores)-x for x in fitness_scores]
 
             new_population: List[NNAgent] = []
             if self.crossover > 0:
