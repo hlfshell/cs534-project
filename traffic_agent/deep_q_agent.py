@@ -132,6 +132,7 @@ class DeepQAgent(TrafficAgent):
         is its weights. Due to lack of time we'll use
         pickle, as problematic as that is. 
         '''
+        return
         with open(filepath, 'wb') as file:
             data = {
                 "id": self._id,
@@ -142,13 +143,11 @@ class DeepQAgent(TrafficAgent):
             pickle.dump(data, file)
     
     @classmethod
-    def load(self, filepath: str, simulation: Simulation) -> AveragedNNAgent:
+    def load(self, filepath: str, simulation: Simulation) -> DeepQNetwork:
+        pass
         with open(filepath, 'rb') as file:
             data = pickle.load(file)
-            return AveragedNNAgent(
+            return DeepQAgent(
                 simulation,
-                neurons_per_layer=data["neurons_per_layer"],
-                hidden_layers=data["hidden_layers"],
-                weights=data["weights"],
-                id = data["id"]
+                
             )
