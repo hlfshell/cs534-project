@@ -22,6 +22,7 @@ class Simulation():
         self.steps = 0
         self.stats_file = self.get_stats_file()
         self.running = False
+        self.osm_file = self.get_osm_file()
     
     def get_stats_file(self):
         tree = ET.parse(self.simulation_config)
@@ -30,7 +31,14 @@ class Simulation():
             filepath = item.get("value")
             dirpath = dirname(self.simulation_config)
             return join(dirpath, filepath)
-
+        
+    def get_osm_file(self):
+        tree = ET.parse(self.simulation_config)
+        root = tree.getroot()
+        for item in root.findall("input/net-file"):
+            filepath = item.get("value")
+            dirpath = dirname(self.simulation_config)
+            return join(dirpath, filepath)
 
     def start(self):
         if self.running:
@@ -76,6 +84,24 @@ class Simulation():
 
         return detectors     
 
+    def get_light_durations(self):
+        tree = ET.parse(self.osm_file)
+        root = tree.getroot()
+        
+        lights = {}
+
+        for item in root.findall("tlLogic"):
+            id = item.get("id")
+            phases = []
+            for phase in item.findall("phase"):
+                phases.append({
+                    "duration": phase.get("duration"),
+                    "min_duration": phase.get("maxDur"),
+                    "max_duration": phase.get("maxDur")
+                })
+            lights[id] = phases
+        
+        return lights
 
     def get_traffic_light_ids(self) -> List[str]:
         return traci.trafficlight.getIDList()
@@ -90,13 +116,17 @@ class Simulation():
             lights[id] = {
                 "phase": phase,
                 "duration": duration,
-                "state": state
+                "state": state,
+                "counter": 0
             }
         
         return lights
 
     def set_traffic_light_duration(self, id:str, duration: int):
         traci.trafficlight.setPhaseDuration(id, duration)
+
+    def get_traffic_light_phase(self, id: str) -> int:
+        return traci.trafficlight.getPhase(id)
 
     def get_stats(self):
         tree = ET.parse(self.stats_file)
