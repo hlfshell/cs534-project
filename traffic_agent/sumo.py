@@ -99,6 +99,9 @@ class Simulation():
     def set_traffic_light_duration(self, id:str, duration: int):
         traci.trafficlight.setPhaseDuration(id, duration)
 
+    def get_traffic_light_phase(self, id: str) -> int:
+        return traci.trafficlight.getPhase(id)
+
     def get_stats(self):
         tree = ET.parse(self.stats_file)
         root = tree.getroot()

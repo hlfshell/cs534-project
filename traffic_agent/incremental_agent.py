@@ -11,9 +11,6 @@ from traffic_agent.sumo import Simulation
 from traffic_agent.traffic_controller import TrafficAgent
 
 
-MIN_PHASE_DURATION = 0
-MAX_PHASE_DURATION = 10
-
 LAST_N_SAMPLES = 5
 
 MIN_PHASE = 3
@@ -139,6 +136,10 @@ class IncrementalNNAgent(TrafficAgent):
             change = changes[index]
             self.traffic_lights[id]["counter"] = self.traffic_lights[id]["counter"] + 1           
 
+            current_phase = simulation.get_traffic_light_phase(id)
+            if self.traffic_lights[id]["phase"] != current_phase:
+                self.traffic_lights[id]["counter"] = 0
+                self.traffic_lights[id]["phase"] = current_phase
             if change >= 0.5:
                 if self.traffic_lights[id]["counter"] > MIN_PHASE:
                     self.traffic_lights[id]["counter"] = 0
