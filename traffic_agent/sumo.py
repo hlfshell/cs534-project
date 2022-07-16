@@ -23,6 +23,8 @@ class Simulation():
         self.stats_file = self.get_stats_file()
         self.running = False
         self.osm_file = self.get_osm_file()
+
+        self.default_light_durations = self.get_light_durations()
     
     def get_stats_file(self):
         tree = ET.parse(self.simulation_config)
@@ -127,6 +129,18 @@ class Simulation():
 
     def get_traffic_light_phase(self, id: str) -> int:
         return traci.trafficlight.getPhase(id)
+    
+    def set_traffic_light_phase(self, id: str, phase: int):
+        traci.trafficlight.setPhase(id, phase)
+
+    def increment_traffic_light_phase(self, id: str):
+        phase = self.get_traffic_light_phase(id)
+        max_phase = len(self.default_light_durations[id])
+        if phase + 1 >= max_phase:
+            next_phase = 0
+        else:
+            next_phase = phase + 1
+        self.set_traffic_light_phase(id, next_phase)
 
     def get_stats(self):
         tree = ET.parse(self.stats_file)
