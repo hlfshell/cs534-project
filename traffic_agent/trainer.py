@@ -109,6 +109,8 @@ class Trainer():
                 b = None
                 while b is None or b == a:
                     b = choices(self.population, weights=weighted_fitness_scores)[0]
+                    if pairings.indexOf((a._id, b._id)) != -1 and pairings.indexOf((b._id, a._id)) != -1:
+                        b = None
 
                 pairings.append((a._id, b._id))
                 agent = self.mate(self.simulation, a, b, self.mutation_rate)
