@@ -109,7 +109,7 @@ class Trainer():
                 b = None
                 while b is None or b == a:
                     b = choices(self.population, weights=weighted_fitness_scores)[0]
-                    if pairings.indexOf((a._id, b._id)) != -1 and pairings.indexOf((b._id, a._id)) != -1:
+                    if (a._id, b._id) in pairings or (b._id, a._id) in pairings:
                         b = None
 
                 pairings.append((a._id, b._id))
